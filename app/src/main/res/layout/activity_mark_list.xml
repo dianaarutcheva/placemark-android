@@ -5,37 +5,34 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="org.setu.placemark.MarkListActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center"
         android:orientation="vertical"
         tools:layout_editor_absoluteX="1dp"
         tools:layout_editor_absoluteY="1dp">
 
         <TextView
-            android:id="@+id/mainTitle"
+            android:id="@+id/marksTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="Placed Marks"
-            android:textSize="32sp"
+            android:textSize="28sp"
             android:textStyle="bold" />
 
-        <Button
-            android:id="@+id/viewMarksButton"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/marksRecyclerView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
-            android:text="View Marks" />
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
         <Button
-            android:id="@+id/addMarkButton"
+            android:id="@+id/returnButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:text="Add Mark" />
+            android:text="Back to menu" />
     </LinearLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>
