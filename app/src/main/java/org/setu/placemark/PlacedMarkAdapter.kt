@@ -3,16 +3,18 @@ package org.setu.placemark
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.placemark.R
 import org.setu.placemark.models.PlacemarkModel
-
+import timber.log.Timber
+interface OnMarkListener {
+    fun onMarkClick(mark: PlacemarkModel)
+    fun onMarkLongClick(mark: PlacemarkModel): Boolean
+}
 class PlacedMarkAdapter(
     private var marks: List<PlacemarkModel>,
-    private val onEdit: (PlacemarkModel) -> Unit,
-    private val onDelete: (PlacemarkModel) -> Unit
+    private val listener: OnMarkListener
 ) : RecyclerView.Adapter<PlacedMarkAdapter.MarkViewHolder>() {
 
     class MarkViewHolder(itemView: View) :
@@ -27,11 +29,6 @@ class PlacedMarkAdapter(
         val coordinatesText: TextView =
             itemView.findViewById(R.id.coordinatesText)
 
-        val editButton: Button =
-            itemView.findViewById(R.id.editButton)
-
-        val deleteButton: Button =
-            itemView.findViewById(R.id.deleteButton)
     }
 
     override fun onCreateViewHolder(
@@ -54,12 +51,12 @@ class PlacedMarkAdapter(
         holder.descriptionText.text = mark.description
         holder.coordinatesText.text = "X: ${mark.x}, Y: ${mark.y}"
 
-        holder.editButton.setOnClickListener {
-            onEdit(mark)
+        holder.itemView.setOnClickListener {
+            listener.onMarkClick(mark)
         }
 
-        holder.deleteButton.setOnClickListener {
-            onDelete(mark)
+        holder.itemView.setOnLongClickListener {
+            listener.onMarkLongClick(mark)
         }
     }
 
@@ -69,6 +66,7 @@ class PlacedMarkAdapter(
 
     fun updateMarks(newMarks: List<PlacemarkModel>) {
         marks = newMarks
+        Timber.d("Refreshed placemark list: %d items", marks.size)
         notifyDataSetChanged()
     }
 }
