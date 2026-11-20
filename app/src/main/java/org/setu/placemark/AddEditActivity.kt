@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.placemark.R
 import org.setu.placemark.models.PlacemarkModel
+import timber.log.Timber
 
 class AddEditActivity : AppCompatActivity() {
 
@@ -124,6 +125,7 @@ class AddEditActivity : AppCompatActivity() {
             )
 
             AppData.placemarks.create(mark)
+            Timber.d("Created placemark id=%s", mark.id)
 
             Toast.makeText(
                 this,
@@ -141,7 +143,9 @@ class AddEditActivity : AppCompatActivity() {
                 y = y
             )
 
+
             AppData.placemarks.update(mark)
+            Timber.d("Updated placemark id=%s", mark.id)
 
             Toast.makeText(
                 this,

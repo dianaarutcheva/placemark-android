@@ -9,10 +9,15 @@ import android.widget.Button
 import android.content.Intent
 
 import com.example.placemark.R
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if (Timber.treeCount == 0) {
+            Timber.plant(Timber.DebugTree())
+        }
+        Timber.d("Main menu opened")
         enableEdgeToEdge()
         setContentView(R.layout.activity_main)
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->

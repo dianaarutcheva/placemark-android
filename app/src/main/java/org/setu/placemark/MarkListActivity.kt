@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.placemark.R
 import org.setu.placemark.models.PlacemarkModel
+import androidx.appcompat.app.AlertDialog
+import timber.log.Timber
 
 class MarkListActivity : AppCompatActivity() {
 
@@ -41,12 +43,24 @@ class MarkListActivity : AppCompatActivity() {
 
         adapter = PlacedMarkAdapter(
             marks = AppData.placemarks.findAll(),
-            onEdit = { mark ->
-                editMark(mark)
-            },
-            onDelete = { mark ->
-                AppData.placemarks.delete(mark.id)
-                adapter.updateMarks(AppData.placemarks.findAll())
+            listener = object : OnMarkListener {
+                override fun onMarkClick(mark: PlacemarkModel) {
+                    editMark(mark)
+                }
+
+                override fun onMarkLongClick(mark: PlacemarkModel): Boolean {
+                    AlertDialog.Builder(this@MarkListActivity)
+                        .setTitle("Delete this mark?")
+                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Delete") { _, _ ->
+                            Timber.d("Deleting placemark id=%s", mark.id)
+                            AppData.placemarks.delete(mark.id)
+                            adapter.updateMarks(AppData.placemarks.findAll())
+                        }
+                        .show()
+
+                    return true
+                }
             }
         )
 
@@ -67,6 +81,7 @@ class MarkListActivity : AppCompatActivity() {
     }
 
     private fun editMark(mark: PlacemarkModel) {
+        Timber.d("Editing placemark id=%s", mark.id)
         val intent = Intent(this, AddEditActivity::class.java)
         intent.putExtra("id", mark.id)
         startActivity(intent)
