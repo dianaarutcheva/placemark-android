@@ -33,8 +33,7 @@
             android:ems="10"
             android:hint="Description"
             android:inputType="text|textMultiLine"
-            android:minLines="3"
-            android:text="Name" />
+            android:minLines="3" />
 
         <EditText
             android:id="@+id/xInput"
@@ -42,9 +41,8 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="X coordinate"
-            android:inputType="number|numberDecimal"
-            android:minHeight="48dp"
-            android:text="Name" />
+            android:inputType="numberDecimal|numberSigned"
+            android:minHeight="48dp" />
 
         <EditText
             android:id="@+id/yInput"
@@ -52,9 +50,23 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Y coordinate"
-            android:inputType="number|numberDecimal"
-            android:minHeight="48dp"
-            android:text="Name" />
+            android:inputType="numberDecimal|numberSigned"
+            android:minHeight="48dp" />
+
+        <ImageView
+            android:id="@+id/imageViewAdd"
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="Placemark photo preview"
+            android:scaleType="centerCrop"
+            android:src="@android:drawable/ic_menu_gallery" />
+
+        <Button
+            android:id="@+id/imagePickButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Choose Image" />
 
         <Button
             android:id="@+id/saveButton"

@@ -26,4 +26,11 @@
         android:layout_height="wrap_content"
         android:text="TextView"
         android:textSize="14sp" />
+
+    <ImageView
+        android:id="@+id/markImage"
+        android:layout_width="match_parent"
+        android:layout_height="120dp"
+        android:contentDescription="Placemark photo"
+        android:scaleType="centerCrop" />
 </LinearLayout>
