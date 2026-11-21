@@ -1,18 +1,18 @@
 package org.setu.placemark
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
 import android.widget.EditText
+import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import com.example.placemark.R
 import org.setu.placemark.models.PlacemarkModel
 import timber.log.Timber
-import android.content.Intent
-import android.net.Uri
-import android.widget.ImageView
-import androidx.activity.result.contract.ActivityResultContracts
 
 class AddEditActivity : AppCompatActivity() {
 
@@ -20,11 +20,12 @@ class AddEditActivity : AppCompatActivity() {
     private lateinit var descriptionInput: EditText
     private lateinit var xInput: EditText
     private lateinit var yInput: EditText
+    private lateinit var imagePreview: ImageView
 
     private var editingId: Long? = null
-
-    private lateinit var imagePreview: ImageView
     private var selectedImageUri: Uri? = null
+    private var selectedLatitude: Double? = null
+    private var selectedLongitude: Double? = null
 
     private val imagePicker =
         registerForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
@@ -42,9 +43,9 @@ class AddEditActivity : AppCompatActivity() {
                 imagePreview.setImageURI(uri)
             }
         }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         setContentView(R.layout.activity_add_edit)
 
         imagePreview = findViewById(R.id.imageViewAdd)
@@ -53,33 +54,53 @@ class AddEditActivity : AppCompatActivity() {
             imagePicker.launch(arrayOf("image/*"))
         }
 
-        titleInput =
-            findViewById(R.id.titleInput)
+        titleInput = findViewById(R.id.titleInput)
+        descriptionInput = findViewById(R.id.descriptionInput)
+        xInput = findViewById(R.id.xInput)
+        yInput = findViewById(R.id.yInput)
 
-        descriptionInput =
-            findViewById(R.id.descriptionInput)
+        val mapPicker =
+            registerForActivityResult(
+                ActivityResultContracts.StartActivityForResult()
+            ) { result ->
+                if (result.resultCode == RESULT_OK) {
+                    val data = result.data ?: return@registerForActivityResult
+                    selectedLatitude = data.getDoubleExtra("latitude", 0.0)
+                    selectedLongitude = data.getDoubleExtra("longitude", 0.0)
 
-        xInput =
-            findViewById(R.id.xInput)
+                    selectedLatitude?.let {
+                        xInput.setText(it.toString())
+                    }
 
-        yInput =
-            findViewById(R.id.yInput)
+                    selectedLongitude?.let {
+                        yInput.setText(it.toString())
+                    }
+                }
+            }
 
-        val saveButton =
-            findViewById<Button>(R.id.saveButton)
+        findViewById<Button>(R.id.buttonLoc).setOnClickListener {
+            val mapIntent = Intent(this, MapPickerActivity::class.java)
+            val latitude = xInput.text.toString().toDoubleOrNull()
+            val longitude = yInput.text.toString().toDoubleOrNull()
 
-        val cancelButton =
-            findViewById<Button>(R.id.cancelButton)
+            if (latitude != null && latitude in -90.0..90.0 &&
+                longitude != null && longitude in -180.0..180.0
+            ) {
+                mapIntent.putExtra("latitude", latitude)
+                mapIntent.putExtra("longitude", longitude)
+            }
 
-        editingId =
-            intent.getLongExtra("id", -1L)
-                .takeIf { it != -1L }
+            mapIntent.putExtra("title", titleInput.text.toString().trim())
+            mapPicker.launch(mapIntent)
+        }
+
+        val saveButton = findViewById<Button>(R.id.saveButton)
+        val cancelButton = findViewById<Button>(R.id.cancelButton)
+
+        editingId = intent.getLongExtra("id", -1L).takeIf { it != -1L }
 
         if (editingId != null) {
-
-            findViewById<TextView>(R.id.formTitle)
-                .text = "Edit Mark"
-
+            findViewById<TextView>(R.id.formTitle).text = "Edit Mark"
             loadExistingMark(editingId!!)
         }
 
@@ -93,18 +114,10 @@ class AddEditActivity : AppCompatActivity() {
     }
 
     private fun loadExistingMark(id: Long) {
-
-        val mark =
-            AppData.placemarks.findOne(id)
+        val mark = AppData.placemarks.findOne(id)
 
         if (mark == null) {
-
-            Toast.makeText(
-                this,
-                "Mark not found",
-                Toast.LENGTH_SHORT
-            ).show()
-
+            Toast.makeText(this, "Mark not found", Toast.LENGTH_SHORT).show()
             finish()
             return
         }
@@ -123,7 +136,6 @@ class AddEditActivity : AppCompatActivity() {
             imagePreview.setImageResource(android.R.drawable.ic_menu_gallery)
         }
     }
-
 
     private fun saveMark() {
         val title = titleInput.text.toString().trim()
