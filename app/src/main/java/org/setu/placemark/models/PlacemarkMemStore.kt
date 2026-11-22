@@ -1,10 +1,38 @@
 package org.setu.placemark.models
 
+import com.google.gson.GsonBuilder
+import com.google.gson.reflect.TypeToken
+import java.io.File
 import java.util.concurrent.atomic.AtomicLong
 
-class PlacemarkMemStore {
+class PlacemarkMemStore(private val file: File) {
     private val placemarks = ArrayList<PlacemarkModel>()
     private val lastId = AtomicLong(0L)
+
+    private val gson = GsonBuilder()
+        .setPrettyPrinting()
+        .create()
+
+    init {
+        load()
+    }
+
+    private fun load() {
+        if (!file.exists()) return
+
+        val type = object : TypeToken<ArrayList<PlacemarkModel>>() {}.type
+        val loaded: ArrayList<PlacemarkModel> =
+            gson.fromJson(file.readText(), type) ?: arrayListOf()
+
+        placemarks.clear()
+        placemarks.addAll(loaded)
+        lastId.set(placemarks.maxOfOrNull { it.id } ?: 0L)
+    }
+
+    private fun save() {
+        file.parentFile?.mkdirs()
+        file.writeText(gson.toJson(placemarks))
+    }
 
     fun findAll(): List<PlacemarkModel> {
         return placemarks
@@ -14,6 +42,7 @@ class PlacemarkMemStore {
         placemark.validate()
         placemark.id = lastId.incrementAndGet()
         placemarks.add(placemark)
+        save()
     }
 
     fun update(placemark: PlacemarkModel): Boolean {
@@ -26,6 +55,7 @@ class PlacemarkMemStore {
             foundPlacemark.x = placemark.x
             foundPlacemark.y = placemark.y
             foundPlacemark.imageUri = placemark.imageUri
+            save()
             true
         } else {
             false
@@ -36,6 +66,7 @@ class PlacemarkMemStore {
         val foundPlacemark = findOne(id)
         return if (foundPlacemark != null) {
             placemarks.remove(foundPlacemark)
+            save()
             true
         } else {
             false
@@ -43,6 +74,6 @@ class PlacemarkMemStore {
     }
 
     fun findOne(id: Long): PlacemarkModel? {
-        return placemarks.find { p -> p.id == id }
+        return placemarks.find { placemark -> placemark.id == id }
     }
 }
