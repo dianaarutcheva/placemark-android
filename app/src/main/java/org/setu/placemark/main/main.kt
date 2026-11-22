@@ -2,10 +2,11 @@ package org.setu.placemark.main
 
 import org.setu.placemark.models.PlacemarkMemStore
 import org.setu.placemark.models.PlacemarkModel
-
-val store = PlacemarkMemStore()
+import java.io.File
+val store = PlacemarkMemStore(File("console_place_list.json"))
 
 fun main() {
+    println("=== Placemark Console App (Lab 1) ===")
     println("=== Placemark Console App (Lab 1) ===")
     var input: Int
     do {

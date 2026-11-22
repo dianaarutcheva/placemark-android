@@ -14,6 +14,7 @@ import timber.log.Timber
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        AppData.initialize(this)
         if (Timber.treeCount == 0) {
             Timber.plant(Timber.DebugTree())
         }
