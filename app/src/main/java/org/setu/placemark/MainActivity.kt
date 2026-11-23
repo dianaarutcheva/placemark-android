@@ -43,6 +43,8 @@ class MainActivity : AppCompatActivity() {
                 Intent(this, AddEditActivity::class.java)
             )
         }
-
+        findViewById<Button>(R.id.viewMapButton).setOnClickListener {
+            startActivity(Intent(this, MapListActivity::class.java))
+        }
     }
 }

@@ -33,6 +33,10 @@
         <activity
             android:name="org.setu.placemark.MapPickerActivity"
             android:exported="false" />
+        <activity
+            android:name="org.setu.placemark.MapListActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>
